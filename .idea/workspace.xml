@@ -5,28 +5,31 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="261cdfd9-e127-4e31-8bf0-b8373bb1afde" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/gradlew.bat" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.gradle" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/Component.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/Entity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/components/AirPollutionMeasurer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/components/District.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTAsyncClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/CleaningRobot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/MQTTBroker.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/AdministrationClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/MQTTBroker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/District.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/AirPollutionSensor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/DistrictCell.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/Position.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/generators/RandomPortNumberGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/generators/RandomStringGenerator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/Component.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/Entity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/AirPollutionMeasurer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/District.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTAsyncClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/CleaningRobot.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/MQTTBroker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationClient.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationServer.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,6 +50,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="2PW3i3UV0HEIdzqiwQro27Ik3zI" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
