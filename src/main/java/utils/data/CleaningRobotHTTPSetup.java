@@ -5,19 +5,19 @@ import greenfield.model.robot.CleaningRobot;
 import java.util.List;
 
 public class CleaningRobotHTTPSetup {
-    private Position<Integer, Integer> position;
+    private DistrictCell districtCell;
     private List<CleaningRobot> currentCleaningRobots;
 
-    public Position<Integer, Integer> getPosition() {
-        return position;
+    public DistrictCell getDistrictCell() {
+        return districtCell;
     }
 
     public List<CleaningRobot> getCurrentCleaningRobots() {
         return currentCleaningRobots;
     }
 
-    public void setPosition(Position<Integer, Integer> position) {
-        this.position = position;
+    public void setDistrictCell(DistrictCell districtCell) {
+        this.districtCell = districtCell;
     }
 
     public void setCurrentCleaningRobots(List<CleaningRobot> currentCleaningRobots) {

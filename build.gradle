@@ -53,17 +53,23 @@ protobuf {
     }
 
     generateProtoTasks {
-        all()*.plugins {
-            grpc {}
+        all().each { task ->
+            task.builtins {
+                java {
+                    option "lite"
+                }
+            }
         }
     }
 }
 
 sourceSets {
     main {
+        proto {
+            srcDir 'src/main/java/proto'
+        }
         java {
-            srcDirs 'build/generated/source/proto/main/grpc'
-            srcDirs 'build/generated/source/proto/main/java'
+            srcDirs 'generated/main/java'
         }
     }
 }

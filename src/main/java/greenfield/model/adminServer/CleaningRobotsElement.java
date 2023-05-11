@@ -10,50 +10,59 @@ import java.util.Objects;
 
 @XmlRootElement(name = "robots")
 public class CleaningRobotsElement {
-    private static List<CleaningRobot> robots = new ArrayList<>();
-    private static District district = new District(10, 10, 5);
+    private static final List<CleaningRobot> robots = new ArrayList<>();
+    private static final District district = new District(10, 10, 5);
 
     public static boolean canInsertRobot(CleaningRobot robot) {
-        return robots.stream().filter(e -> Objects.equals(e.getId(), robot.getId())).count() < 1;
+        synchronized (robots) {
+            return robots.stream().noneMatch(e -> Objects.equals(e.getId(), robot.getId()));
+        }
     }
 
     public static boolean robotExists(String robotID) {
-        return robots.stream().filter(e -> Objects.equals(e.getId(), robotID)).count() > 0;
+        synchronized (robots) {
+            return robots.stream().anyMatch(e -> Objects.equals(e.getId(), robotID));
+        }
     }
 
     public static DistrictCell insertRobot(CleaningRobot robot) throws Exception {
-        var districtCell = district.addRobot(robot);
+        synchronized (robots) {
+            var districtCell = district.addRobot(robot);
 
-        robot.setPosition(districtCell.position);
-        robot.setMqttListenerChannel(String.valueOf(districtCell.districtNumber));
-        robots.add(robot);
+            robot.setPosition(districtCell.position);
+            robot.setMqttListenerChannel(String.valueOf(districtCell.districtNumber));
+            robots.add(robot);
 
-        // TODO: make the robot communicate to others its position
+            // TODO: make the robot communicate to others its position
 
-        return districtCell;
+            return districtCell;
+        }
     }
 
     public static List<CleaningRobot> getRobots() {
-        return robots;
+        synchronized (robots) {
+            return new ArrayList<>(robots); // done to prevent to fuck up the reading of the list when returned -> i return a deep copy, so the list does not get concurrently modified.
+        }
     }
 
     public static boolean removeRobot(String robotID) {
-        if (!robotExists(robotID))
-            return false;
-
-        return robots.removeIf(e -> e.getId().equals(robotID));
+        synchronized(robots) {
+            if (!robotExists(robotID))
+                return false;
+            return robots.removeIf(e -> e.getId().equals(robotID));
+        }
     }
 
     public static boolean mutateRobot(String oldRobotIndex, CleaningRobot newRobot) {
-        if (!robotExists(oldRobotIndex))
-            return false;
-
-        robots.replaceAll(e -> {
-            if (Objects.equals(e.getId(), oldRobotIndex))
-                return newRobot;
-
-            return e;
-        });
-        return true;
+        synchronized(robots) {
+            if (!robotExists(oldRobotIndex))
+                return false;
+            robots.replaceAll(e -> {
+                if (Objects.equals(e.getId(), oldRobotIndex))
+                    return newRobot;
+                return e;
+            });
+            return true;
+        }
     }
 }

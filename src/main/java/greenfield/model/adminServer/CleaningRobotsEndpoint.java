@@ -24,7 +24,7 @@ public class CleaningRobotsEndpoint {
         {
             try {
                 var districtCell = CleaningRobotsElement.insertRobot(robot);
-                CleaningRobotHTTPResponse response = new CleaningRobotHTTPResponse(districtCell.position, CleaningRobotsElement.getRobots());
+                CleaningRobotHTTPResponse response = new CleaningRobotHTTPResponse(districtCell, CleaningRobotsElement.getRobots());
                 return Response.ok(response).build();
             } catch (Exception e) {
                 throw new RuntimeException(e);

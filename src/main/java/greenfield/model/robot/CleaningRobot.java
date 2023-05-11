@@ -4,6 +4,7 @@ import greenfield.model.adminServer.AdministrationServer;
 
 import com.google.gson.Gson;
 
+import greenfield.model.robot.sensors.AirPollutionSensor;
 import utils.data.CleaningRobotHTTPSetup;
 import utils.data.Position;
 import utils.generators.RandomStringGenerator;
@@ -22,13 +23,12 @@ public class CleaningRobot {
     private String id;
     private String mqttListenerChannel;
     private Position<Integer, Integer> position;
-    private AirPollutionSensor sensor;
+    private transient AirPollutionSensor sensor; // apparently I spent an hour to discover that gson cannot serialize Threads, FML
 
     public CleaningRobot() {
         this.id = RandomStringGenerator.generate();
         this.mqttListenerChannel = "greenfield/pollution/district";
         this.position = new Position<>(-1, -1);
-        this.sensor = new AirPollutionSensor();
     }
 
     public boolean requestToJoinNetwork() {
@@ -43,7 +43,7 @@ public class CleaningRobot {
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true); // so the connection will register the output;
 
-            String requestBody = String.format("{\"id\": \"%s\", \"mqttListenerChannel\": \"%s\"}", this.id, this.mqttListenerChannel);
+            String requestBody = String.format("{\"id\": \"%s\"}", this.id);
 
             OutputStream os = conn.getOutputStream();
             os.write(requestBody.getBytes());
@@ -67,10 +67,15 @@ public class CleaningRobot {
                 Gson gson = new Gson();
                 CleaningRobotHTTPSetup response = gson.fromJson(sb.toString(), CleaningRobotHTTPSetup.class);
 
-                Position<Integer, Integer> newPosition = response.getPosition();
+                Position<Integer, Integer> newPosition = response.getDistrictCell().position;
+                String publishingDistrictNumber = String.valueOf(response.getDistrictCell().districtNumber);
                 List<CleaningRobot> robots = response.getCurrentCleaningRobots(); // TODO: use this to connect with others through MQTT
 
                 this.position = newPosition;
+                this.mqttListenerChannel += publishingDistrictNumber;
+
+                this.sensor = new AirPollutionSensor(this.id, this.mqttListenerChannel);
+                new Thread(this.sensor).start();
 
                 result = true;
             } else {
@@ -109,6 +114,8 @@ public class CleaningRobot {
                 while ((output = br.readLine()) != null) {
                     System.out.println(output);
                 }
+
+                this.sensor.stopSensor();
 
                 result = true;
             } else {

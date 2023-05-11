@@ -6,24 +6,24 @@ import java.util.List;
 import java.util.Objects;
 
 public final class CleaningRobotHTTPResponse {
-    private Position<Integer, Integer> position;
+    private DistrictCell districtCell;
     private List<CleaningRobot> currentCleaningRobots;
 
-    public CleaningRobotHTTPResponse(Position<Integer, Integer> position, List<CleaningRobot> currentCleaningRobots) {
-        this.position = position;
+    public CleaningRobotHTTPResponse(DistrictCell districtCell, List<CleaningRobot> currentCleaningRobots) {
+        this.districtCell = districtCell;
         this.currentCleaningRobots = currentCleaningRobots;
     }
 
-    public Position<Integer, Integer> getPosition() {
-        return position;
+    public DistrictCell getDistrictCell() {
+        return districtCell;
     }
 
     public List<CleaningRobot> getCurrentCleaningRobots() {
         return currentCleaningRobots;
     }
 
-    public void setPosition(Position<Integer, Integer> position) {
-        this.position = position;
+    public void setDistrictCell(DistrictCell districtCell) {
+        this.districtCell = districtCell;
     }
 
     public void setCurrentCleaningRobots(List<CleaningRobot> currentCleaningRobots) {
@@ -35,19 +35,19 @@ public final class CleaningRobotHTTPResponse {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (CleaningRobotHTTPResponse) obj;
-        return Objects.equals(this.position, that.position) &&
+        return Objects.equals(this.districtCell, that.districtCell) &&
                 Objects.equals(this.currentCleaningRobots, that.currentCleaningRobots);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(position, currentCleaningRobots);
+        return Objects.hash(districtCell, currentCleaningRobots);
     }
 
     @Override
     public String toString() {
         return "CleaningRobotHTTPResponse[" +
-                "position=" + position + ", " +
+                "districtCell=" + districtCell + ", " +
                 "currentCleaningRobots=" + currentCleaningRobots + ']';
     }
 }

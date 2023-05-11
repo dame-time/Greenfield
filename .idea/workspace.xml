@@ -5,31 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="261cdfd9-e127-4e31-8bf0-b8373bb1afde" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/AdministrationClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/MQTTBroker.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/District.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/AirPollutionSensor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/DistrictCell.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/Position.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/generators/RandomPortNumberGenerator.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/generators/RandomStringGenerator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTAsyncClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTBroker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTMessageBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/AirPollutionSensor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/proto/AirPollutionMessage.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/simulator/BufferImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/Component.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/Entity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/AirPollutionMeasurer.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/District.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTAsyncClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/components/MQTTClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/CleaningRobot.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/MQTTBroker.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationClient.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/entities/admin/AdministrationServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/MQTTBroker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/AirPollutionSensor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,14 +53,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "onboarding.tips.debug.path": "/Users/davidepaollilo/Desktop/Workspace/Java/Greenfield/src/main/java/org/example/Main.java"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/davidepaollilo/Desktop/Workspace/Java/Greenfield/src/main/java/org/example/Main.java&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/python" />
+    </key>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
