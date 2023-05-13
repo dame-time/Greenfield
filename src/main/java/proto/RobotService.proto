@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option java_package = "proto";
+
+service RobotService {
+  rpc SendConnectionInfo(RobotNetworkRequest) returns (RobotNetworkResponse) {}
+  rpc SayGoodbye (GoodbyeRequest) returns (GoodbyeResponse) {}
+}
+
+message RobotNetworkRequest {
+  string id = 1;
+  Position position = 2;
+  Server robotServer = 3;
+}
+
+message Server {
+  int32 port = 1;
+  string host = 2;
+}
+
+message Position {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message RobotNetworkResponse {
+  string id = 1;
+  string result = 2;
+  Server receiverServer = 3;
+}
+
+message GoodbyeRequest {
+  string id = 1;
+}
+
+message GoodbyeResponse {
+  bool result = 1;
+}

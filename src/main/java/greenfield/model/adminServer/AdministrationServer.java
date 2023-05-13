@@ -1,7 +1,6 @@
 package greenfield.model.adminServer;
 
 import greenfield.model.mqttConnections.MQTTAsyncClient;
-import greenfield.model.mqttConnections.MQTTClient;
 import greenfield.model.robot.CleaningRobot;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -14,10 +13,7 @@ import proto.AirPollutionMessageOuterClass;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AdministrationServer {
     private static final String HOST = "localhost";
@@ -55,7 +51,18 @@ public class AdministrationServer {
             @Override
             public void messageArrived(String topic, MqttMessage message) throws Exception {
                 System.out.println("Message delivered to topic :- " + topic);
+
                 var airPollutionMessage = AirPollutionMessageOuterClass.AirPollutionMessage.parseFrom(message.getPayload());
+
+                if (CleaningRobotsElement.getRobots()
+                        .stream()
+                        .noneMatch(e -> Objects.equals(e.getId(), airPollutionMessage.getSenderID()))
+                ) {
+                    System.err.println("The Cleaning Robot with ID - " + airPollutionMessage.getSenderID() +
+                            " - is not authorized to send messages!");
+
+                    return;
+                }
 
                 synchronized (airPollutionStats) {
                     if (airPollutionStats.get(topic) == null) {
@@ -67,7 +74,8 @@ public class AdministrationServer {
                             ariPollutionCurrentMeasurements.addAll(airPollutionMessage.getMeasurementsList());
                             airPollutionStats.put(topic, ariPollutionCurrentMeasurements);
                         } catch (Exception e) {
-                            System.err.println(e);
+                            System.err.println("Exception thrown when receiving a message " +
+                                    "in the Administration Server :- " + e);
                         }
                     }
 
@@ -111,8 +119,8 @@ public class AdministrationServer {
         System.out.println("R2: ");
         r2.requestToJoinNetwork();
 
-        r1.disconnectFromServer();
-        r2.disconnectFromServer();
+//        r1.disconnectFromServer();
+//        r2.disconnectFromServer();
 
         stopRestServerOnKeyPress();
 

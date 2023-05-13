@@ -33,8 +33,6 @@ public class CleaningRobotsElement {
             robot.setMqttListenerChannel(String.valueOf(districtCell.districtNumber));
             robots.add(robot);
 
-            // TODO: make the robot communicate to others its position
-
             return districtCell;
         }
     }

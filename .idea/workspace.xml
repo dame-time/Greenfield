@@ -5,24 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="261cdfd9-e127-4e31-8bf0-b8373bb1afde" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTAsyncClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTBroker.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mqttConnections/MQTTMessageBuilder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/AirPollutionSensor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/proto/AirPollutionMessage.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/simulator/BufferImpl.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCServer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/PeerRegistry.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/PositionWatcher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/proto/RobotService.proto" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/MQTTBroker.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsEndpoint.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/AirPollutionSensor.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPResponse.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotHTTPSetup.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +31,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Enum" />
         <option value="Class" />
       </list>
     </option>
@@ -87,5 +82,10 @@
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Greenfield$AdministrationServer.ic" NAME="AdministrationServer Coverage Results" MODIFIED="1683971731968" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false">
+      <FILTER>greenfield.model.adminServer.*</FILTER>
+    </SUITE>
   </component>
 </project>
