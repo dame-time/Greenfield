@@ -1,14 +1,10 @@
 package greenfield.model.robot.grpc;
 
 import greenfield.model.robot.CleaningRobot;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import proto.RobotServiceGrpc;
 import proto.RobotServiceOuterClass;
 
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 public class CleaningRobotGRPCClient {
     private final CleaningRobot referenceRobot;

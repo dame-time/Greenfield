@@ -5,18 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="261cdfd9-e127-4e31-8bf0-b8373bb1afde" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCServer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/PeerRegistry.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/PositionWatcher.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/proto/RobotService.proto" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/PositionWatcher.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/PositionWatcher.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

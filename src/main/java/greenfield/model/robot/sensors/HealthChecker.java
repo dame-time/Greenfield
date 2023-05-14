@@ -18,11 +18,8 @@ public class HealthChecker extends Thread {
 
     private final PositionWatcher positionWatcher;
 
-    private boolean shutDown;
-
     public HealthChecker(CleaningRobot cleaningRobot, List<CleaningRobot> robotsNetwork) {
         this.referenceRobot = cleaningRobot;
-        this.shutDown = false;
 
         this.peerRegistry = new PeerRegistry(this.referenceRobot);
         this.server = new CleaningRobotGRPCServer(cleaningRobot.getgRPCListenerChannel(), this.peerRegistry);
@@ -46,7 +43,7 @@ public class HealthChecker extends Thread {
     }
 
     public synchronized void shutDownHealthChecker() {
-        this.shutDown = true;
+        this.interrupt();
     }
 
     @Override
@@ -55,16 +52,15 @@ public class HealthChecker extends Thread {
         try {
             Thread.sleep(10000);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
         }
 
-        while (!this.shutDown) {
+        while (!Thread.currentThread().isInterrupted()) {
             // TODO: handle mechanic logic
-
             try {
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                Thread.currentThread().interrupt();
             }
         }
 
