@@ -27,7 +27,7 @@ public class PeerRegistry {
         }
     }
 
-    private CleaningRobot referenceRobot;
+    private final CleaningRobot referenceRobot;
     private final Map<String, Peer> connectedPeers;
 
     public PeerRegistry(CleaningRobot referenceRobot) {
@@ -76,6 +76,6 @@ public class PeerRegistry {
     }
 
     public synchronized Map<String, Peer> getConnectedPeers() {
-        return connectedPeers;
+        return new HashMap<>(connectedPeers); // avoid to screw up the reading of the data struct while writing on it, so I return a copy
     }
 }
