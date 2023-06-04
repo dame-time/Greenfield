@@ -5,8 +5,40 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="261cdfd9-e127-4e31-8bf0-b8373bb1afde" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServerRegister.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/SingleCrashedRobotHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/StatisticsElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/StatisticsEndpoint.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/invariants/MechanicInvariant.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/log/CleaningRobotLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/log/HealthCheckerLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/log/MechanicLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/log/PeerRegistryLogger.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/mechanic/Mechanic.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/MutexRequestHandler.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/networking/HeartbeatChecker.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/utils/ACKReceiver.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/greenfield/view/CleaningRobotCLI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/AirPollutionMeasurement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/CleaningRobotIDsHTTPResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/StatisticsHTTPResponse.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/StatisticsHTTPSetup.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/utils/data/StatisticsResponseStatus.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/AdministrationClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/view/AdministrationClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/AdministrationServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/CleaningRobotsElement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/District.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/adminServer/District.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/CleaningRobot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCClient.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/CleaningRobotGRPCServer.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/PeerRegistry.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/grpc/PeerRegistry.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/AirPollutionSensor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/AirPollutionSensor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/greenfield/model/robot/sensors/HealthChecker.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/proto/AirPollutionMessage.proto" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/proto/AirPollutionMessage.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/proto/RobotService.proto" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/proto/RobotService.proto" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/utils/generators/RandomPortNumberGenerator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/utils/generators/RandomPortNumberGenerator.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,13 +75,62 @@
     &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/davidepaollilo/Desktop/Workspace/Java/Greenfield/src/main/java/org/example/Main.java&quot;
+    &quot;onboarding.tips.debug.path&quot;: &quot;/Users/davidepaollilo/Desktop/Workspace/Java/Greenfield/src/main/java/org/example/Main.java&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.projectsettings.compiler.annotationProcessors&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/python" />
     </key>
+  </component>
+  <component name="RunManager" selected="Application.CleaningRobotCLI">
+    <configuration name="AdministrationClient" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="greenfield.view.AdministrationClient" />
+      <module name="Greenfield.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="greenfield.view.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="AdministrationServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="greenfield.model.adminServer.AdministrationServer" />
+      <module name="Greenfield.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="greenfield.model.adminServer.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CleaningRobotCLI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="greenfield.view.CleaningRobotCLI" />
+      <module name="Greenfield.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="greenfield.view.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.AdministrationClient" />
+        <item itemvalue="Application.AdministrationServer" />
+        <item itemvalue="Application.CleaningRobotCLI" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">

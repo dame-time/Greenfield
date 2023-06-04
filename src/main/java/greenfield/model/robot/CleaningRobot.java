@@ -22,6 +22,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
+// TODO: Create a way to assign a unique ID
 @XmlRootElement(name = "robot")
 public class CleaningRobot {
     private String id;
@@ -31,7 +32,7 @@ public class CleaningRobot {
 
     private CleaningRobotStatus cleaningRobotStatus;
 
-    private transient AirPollutionSensor sensor; // apparently I spent an hour to discover that gson cannot serialize Threads, FML
+    private transient AirPollutionSensor sensor;
     private transient HealthChecker healthChecker;
 
     public CleaningRobot() {
@@ -70,14 +71,10 @@ public class CleaningRobot {
             boolean result = false;
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println("Successfully added the robot - " + this.getId() + " - to the network.");
-
-                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream()))); // printing the JSON response
+                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream())));
                 StringBuilder sb = new StringBuilder();
                 String output;
-//                System.out.println("Output from Server .... \n");
                 while ((output = br.readLine()) != null) {
-//                    System.out.println(output);
                     sb.append(output);
                 }
 
@@ -87,7 +84,7 @@ public class CleaningRobot {
                 this.position = response.getDistrictCell().position;
 
                 String publishingDistrictNumber = String.valueOf(response.getDistrictCell().districtNumber);
-                List<CleaningRobot> robots = response.getCurrentCleaningRobots(); // TODO: use this to connect with others through gRPC
+                List<CleaningRobot> robots = response.getCurrentCleaningRobots();
 
                 var otherRobots = robots.stream().filter(e -> !Objects.equals(e.getId(), this.id)).toList();
 
@@ -104,7 +101,6 @@ public class CleaningRobot {
 
                 result = true;
             } else {
-                System.out.println("Failed to add the robot to the network. Response code: " + responseCode);
                 this.cleaningRobotStatus = CleaningRobotStatus.DEAD;
             }
 
@@ -134,15 +130,6 @@ public class CleaningRobot {
             boolean result = false;
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                System.out.println("Successfully removed the robot to the network.");
-
-//                BufferedReader br = new BufferedReader(new InputStreamReader((conn.getInputStream()))); // printing the JSON response
-//                String output;
-//                System.out.println("Output from Server .... \n");
-//                while ((output = br.readLine()) != null) {
-//                    System.out.println(output);
-//                }
-
                 this.sensor.stopSensor();
                 this.healthChecker.shutDownHealthChecker();
 
@@ -151,8 +138,6 @@ public class CleaningRobot {
                 this.cleaningRobotStatus = CleaningRobotStatus.DEAD;
 
                 result = true;
-            } else {
-                System.out.println("Failed to remove the robot from the network. Response code: " + responseCode);
             }
 
             conn.disconnect();
@@ -162,6 +147,16 @@ public class CleaningRobot {
         }
 
         return false;
+    }
+
+    public void crash() {
+        this.sensor.stopSensor();
+        this.healthChecker.crashHealthChecker();
+        this.healthChecker.shutDownHealthChecker();
+    }
+
+    public void fix() {
+        this.healthChecker.askForMechanic();
     }
 
     public String getId() {

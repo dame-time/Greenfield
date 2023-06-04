@@ -3,7 +3,13 @@ syntax = "proto3";
 option java_package = "proto";
 
 message AirPollutionMessage {
-  repeated double measurements = 1;
+  repeated AirPollutionMeasurement measurements = 1;
   int64 timestamp = 2;
   string senderID = 3;
+}
+
+message AirPollutionMeasurement {
+  double measurement = 1;
+  string senderID = 2;
+  int64 timestamp = 3;
 }

@@ -18,6 +18,11 @@ public class District {
         buildSubDistricts(subdivisionSize);
     }
 
+    public District(District district) {
+        this.width = district.width;
+        this.height = district.height;
+    }
+
     private void buildSubDistricts(int subdivisionFactor) throws IllegalArgumentException {
         if (width % subdivisionFactor != 0 || height % subdivisionFactor != 0)
             throw new IllegalArgumentException("Subdivision must evenly divide both width and height!");
@@ -86,5 +91,20 @@ public class District {
 
         throw new Exception("Can't find a sub-district where to place the Robot!");
     }
+
+    public boolean removeRobot(String robotId) {
+        for (List<DistrictCell> districtCells : subDistricts.values()) {
+            for (DistrictCell cell : districtCells) {
+                if (cell.cleaningRobot != null && cell.cleaningRobot.getId().equals(robotId)) {
+                    cell.cleaningRobot = null;
+                    cell.isBusy = false;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
 

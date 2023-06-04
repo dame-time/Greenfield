@@ -10,31 +10,38 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import proto.AirPollutionMessageOuterClass;
+import utils.data.AirPollutionMeasurement;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
 
+// TODO: When a robot leaves or crash delete it from my list
 public class AdministrationServer {
     private static final String HOST = "localhost";
     private static final int PORT = 8080;
     public static final String BASE_URI = "http://" + HOST + ":" + PORT + "/";
 
-    public static final Map<String, List<Double>> airPollutionStats = new HashMap<>();
-
     private static HttpServer server;
 
+    private static SingleCrashedRobotHandler singleCrashedRobotHandler;
+
     public static void startRESTServer() {
-        final ResourceConfig rc = new ResourceConfig().packages("greenfield.model.adminServer", "greenfield.model");
+        final ResourceConfig rc = new ResourceConfig().packages("greenfield.model.adminServer",
+                "greenfield.model.robot");
         server = GrizzlyHttpServerFactory.createHttpServer(URI.create(BASE_URI), rc);
+
+        singleCrashedRobotHandler = new SingleCrashedRobotHandler();
+        singleCrashedRobotHandler.start();
 
         System.out.println("Server started on: " + BASE_URI);
     }
 
     public static void stopRestServerOnKeyPress() throws IOException {
-        System.out.println("Hit any key to stop the server...");
-        System.in.read();
+        System.out.println("Hit Enter to stop the server...");
+        System.in.read(); // Just blocking the execution
         System.out.println("Stopping server!");
+        singleCrashedRobotHandler.shutDownSingleProcessCrashHandler();
         server.shutdownNow();
         System.out.println("Server stopped!");
     }
@@ -64,23 +71,32 @@ public class AdministrationServer {
                     return;
                 }
 
-                synchronized (airPollutionStats) {
-                    if (airPollutionStats.get(topic) == null) {
-                        airPollutionStats.put(topic, airPollutionMessage.getMeasurementsList());
-                    }
-                    else {
-                        try {
-                            var ariPollutionCurrentMeasurements = new ArrayList<>(airPollutionStats.get(topic));
-                            ariPollutionCurrentMeasurements.addAll(airPollutionMessage.getMeasurementsList());
-                            airPollutionStats.put(topic, ariPollutionCurrentMeasurements);
-                        } catch (Exception e) {
-                            System.err.println("Exception thrown when receiving a message " +
-                                    "in the Administration Server :- " + e);
-                        }
-                    }
+                List<AirPollutionMeasurement> measurements = new ArrayList<>();
+                airPollutionMessage.getMeasurementsList()
+                        .forEach(value ->  measurements.add(
+                                    new AirPollutionMeasurement(
+                                            value.getMeasurement(),
+                                            value.getTimestamp(),
+                                            value.getSenderID()
+                                    )
+                                )
+                        );
 
-                    System.out.println(airPollutionStats);
+                if (AdministrationServerRegister.getAirPollutionStats().get(topic) == null) {
+                    AdministrationServerRegister.putAirPollutionStats(topic, measurements);
                 }
+                else {
+                    try {
+                        var ariPollutionCurrentMeasurements = new ArrayList<>(AdministrationServerRegister.getAirPollutionStats().get(topic));
+                        ariPollutionCurrentMeasurements.addAll(measurements);
+                        AdministrationServerRegister.putAirPollutionStats(topic, ariPollutionCurrentMeasurements);
+                    } catch (Exception e) {
+                        System.err.println("Exception thrown when receiving a message " +
+                                "in the Administration Server :- " + e);
+                    }
+                }
+
+                System.out.println(AdministrationServerRegister.getAirPollutionStats());
             }
 
             @Override
@@ -92,37 +108,13 @@ public class AdministrationServer {
         client.subscribeToTopic("#");
     }
 
+    // TODO: Refactor this into the controller or the view
     public static void main(String[] args) throws IOException, MqttException {
 
         startRESTServer();
 
         startMQTTClient();
 
-        CleaningRobot r0 = new CleaningRobot();
-        CleaningRobot r1 = new CleaningRobot();
-        CleaningRobot r2 = new CleaningRobot();
-
-        System.out.println("R0: ");
-        r0.requestToJoinNetwork();
-        try {
-            Thread.sleep(200);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("R1: ");
-        r1.requestToJoinNetwork();
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-        System.out.println("R2: ");
-        r2.requestToJoinNetwork();
-
-//        r1.disconnectFromServer();
-//        r2.disconnectFromServer();
-
         stopRestServerOnKeyPress();
-
     }
 }
