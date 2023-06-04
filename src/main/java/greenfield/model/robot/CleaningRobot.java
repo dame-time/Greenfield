@@ -22,7 +22,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
-// TODO: Create a way to assign a unique ID
+// TODO: Pass also a district so I can give it to other robots
 @XmlRootElement(name = "robot")
 public class CleaningRobot {
     private String id;
