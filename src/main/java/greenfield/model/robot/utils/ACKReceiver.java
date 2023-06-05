@@ -19,7 +19,7 @@ public class ACKReceiver extends Thread {
 
     @Override
     public void run() {
-        while (!areAllACKsReceived()) {
+        while (!areAllACKsReceived() && !Thread.currentThread().isInterrupted()) {
 
             try {
                 Thread.sleep(500);

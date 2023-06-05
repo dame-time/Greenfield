@@ -24,7 +24,13 @@ public class CleaningRobotsEndpoint {
         {
             try {
                 var districtCell = CleaningRobotsElement.insertRobot(robot);
-                CleaningRobotHTTPResponse response = new CleaningRobotHTTPResponse(districtCell, CleaningRobotsElement.getRobots());
+                CleaningRobotHTTPResponse response = new CleaningRobotHTTPResponse(
+                        districtCell,
+                        CleaningRobotsElement.getRobots(),
+                        CleaningRobotsElement.getDistrictSize(),
+                        CleaningRobotsElement.getDistrictsSubdivisions()
+                );
+
                 return Response.ok(response).build();
             } catch (Exception e) {
                 throw new RuntimeException(e);

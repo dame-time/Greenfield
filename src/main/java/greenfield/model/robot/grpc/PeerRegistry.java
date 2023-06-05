@@ -1,18 +1,19 @@
 package greenfield.model.robot.grpc;
 
+import greenfield.model.adminServer.District;
 import greenfield.model.robot.CleaningRobot;
+import greenfield.model.robot.utils.PeerBalancingInfo;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import proto.RobotServiceGrpc;
+import utils.data.DistrictCell;
+import utils.data.Pair;
+import utils.data.Position;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-// TODO: Handle synchronization better
 public class PeerRegistry {
     /**
      * Class used in order to represent an individual peer in the system.
@@ -21,17 +22,27 @@ public class PeerRegistry {
         public String id;
         public String host;
         public int port;
+        public Position<Integer, Integer> districtPosition;
+        public int districtNumber;
         public ManagedChannel channel;
         public RobotServiceGrpc.RobotServiceStub stub;
         public Instant lastHeartbeat;
 
-        public Peer(String id, String host, int port, ManagedChannel channel, RobotServiceGrpc.RobotServiceStub stub) {
+        public Peer(String id,
+                    String host,
+                    int port,
+                    ManagedChannel channel,
+                    RobotServiceGrpc.RobotServiceStub stub,
+                    Position<Integer, Integer> districtPosition,
+                    int districtNumber) {
             this.id = id;
             this.host = host;
             this.port = port;
             this.channel = channel;
             this.stub = stub;
             this.lastHeartbeat = Instant.now();
+            this.districtPosition = districtPosition;
+            this.districtNumber = districtNumber;
         }
 
         public void updateHeartbeat() {
@@ -67,6 +78,10 @@ public class PeerRegistry {
     private final CleaningRobot referenceRobot;
     private final Map<String, Peer> connectedPeers;
 
+    private final Map<String, Boolean> changeDistrictsACKReceived;
+
+    private final District district;
+
     /**
      * Constructor for the PeerRegistry class.
      *
@@ -76,6 +91,14 @@ public class PeerRegistry {
         this.connectedPeers = new HashMap<>();
         this.referenceRobot = referenceRobot;
         this.robotMechanic = new RobotMechanic();
+        this.changeDistrictsACKReceived = new HashMap<>();
+        this.district = new District(
+                this.referenceRobot.getDistrictSize(),
+                this.referenceRobot.getDistrictSize(),
+                this.referenceRobot.getDistrictSubdivisions()
+        );
+
+        this.district.placeRobotAtPosition(this.referenceRobot.getPosition());
     }
 
     /**
@@ -87,9 +110,19 @@ public class PeerRegistry {
      * @param channel The communication channel for the peer.
      * @param stub    The service stub for the peer.
      */
-    public synchronized void addPeer(String id, String host, int port, ManagedChannel channel, RobotServiceGrpc.RobotServiceStub stub) {
-        Peer newPeer = new Peer(id, host, port, channel, stub);
-        connectedPeers.put(id, newPeer);
+    public void addPeer(
+                             String id,
+                             String host,
+                             int port,
+                             ManagedChannel channel,
+                             RobotServiceGrpc.RobotServiceStub stub,
+                             Position<Integer, Integer> position,
+                             int districtNumber
+    ) {
+        Peer newPeer = new Peer(id, host, port, channel, stub, position, districtNumber);
+        synchronized (connectedPeers) {
+            connectedPeers.put(id, newPeer);
+        }
     }
 
     /**
@@ -98,17 +131,33 @@ public class PeerRegistry {
      * @param id The unique identifier of the peer.
      * @return The peer that was removed.
      */
-    public synchronized Peer removePeer(String id) {
-        return connectedPeers.remove(id);
+    public Peer removePeer(String id) {
+        Peer removedPeer;
+
+        synchronized (connectedPeers) {
+            removedPeer = connectedPeers.remove(id);
+        }
+
+        return removedPeer;
     }
 
-    public void addRobot(String id, String host, int port) {
+    public void addRobot(
+            String id,
+            String host,
+            int port,
+            Position<Integer, Integer> position,
+            int districtNumber
+    ) {
         ManagedChannel channel = ManagedChannelBuilder.forTarget(host + ":" + port)
                 .usePlaintext()
                 .build();
         RobotServiceGrpc.RobotServiceStub stub = RobotServiceGrpc.newStub(channel);
 
-        this.addPeer(id, host, port, channel, stub);
+        synchronized (district) {
+            this.district.placeRobotAtPosition(position);
+        }
+
+        this.addPeer(id, host, port, channel, stub, position, districtNumber);
     }
 
     /**
@@ -116,16 +165,25 @@ public class PeerRegistry {
      *
      * @param id The unique identifier of the robot.
      */
-    public void removeRobot(String id) {
+    public boolean removeRobot(String id) {
         PeerRegistry.Peer peer = this.getPeer(id);
         if (peer != null) {
+            synchronized (district) {
+                district.removeRobotFromPosition(peer.districtPosition);
+            }
+
             try {
                 peer.channel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 System.err.println("Error shutting down the channel: " + e.getMessage());
             }
+
             this.removePeer(id);
+
+            return true;
         }
+
+        return false;
     }
 
     /**
@@ -160,5 +218,66 @@ public class PeerRegistry {
 
     public synchronized CleaningRobot getReferenceRobot() {
         return referenceRobot;
+    }
+
+    public synchronized District getDistrict() {
+        return district;
+    }
+
+    public void balanceDistrictCells() {
+        Pair<DistrictCell, DistrictCell> cells = this.getDistrict().findCellsToBalance();
+
+        if (cells == null)
+            return;
+
+        synchronized (district) {
+            synchronized (this.referenceRobot) {
+                if (this.referenceRobot.getPosition().equals(cells.getFirst().getPosition())) {
+                    this.referenceRobot.setPosition(cells.getSecond().getPosition());
+                    this.referenceRobot.setDistrictCell(cells.getSecond().getDistrictNumber());
+                    this.referenceRobot.setMqttListenerChannel("greenfield/pollution/district" + cells.getSecond().getDistrictNumber());
+                    System.err.println("++++++++++++++++++++++++++");
+                }
+            }
+
+            district.removeRobotFromPosition(cells.getFirst().getPosition());
+            district.placeRobotAtPosition(cells.getSecond().getPosition());
+            System.err.println("Rebalanced peers was successful: " + district.getRobotsPerDistrict());
+        }
+    }
+
+    public Map<String, Boolean> getChangeDistrictsACKReceived() {
+        synchronized (changeDistrictsACKReceived) {
+            return new HashMap<>(changeDistrictsACKReceived);
+        }
+    }
+
+    public void initializeChangeDistrictsACK() {
+        for (var p : getConnectedPeers().keySet()) {
+            synchronized (changeDistrictsACKReceived) {
+                changeDistrictsACKReceived.put(p, false);
+            }
+        }
+    }
+
+    public void addChangeDistrictsACK(String robotID) {
+        synchronized (changeDistrictsACKReceived) {
+            changeDistrictsACKReceived.put(robotID, true);
+        }
+    }
+
+    public boolean removeChangeDistrictsACK(String robotID) {
+        synchronized (changeDistrictsACKReceived) {
+            if (changeDistrictsACKReceived.get(robotID))
+                return changeDistrictsACKReceived.remove(robotID);
+        }
+
+        return false;
+    }
+
+    public void clearChangeDistrictsACK() {
+        synchronized (changeDistrictsACKReceived) {
+            changeDistrictsACKReceived.clear();
+        }
     }
 }

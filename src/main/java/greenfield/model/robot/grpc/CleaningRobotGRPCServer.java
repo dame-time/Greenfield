@@ -5,6 +5,7 @@ import io.grpc.ServerBuilder;
 import io.grpc.stub.StreamObserver;
 import proto.RobotServiceGrpc;
 import proto.RobotServiceOuterClass;
+import utils.data.Position;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -69,6 +70,48 @@ public class CleaningRobotGRPCServer {
         }
 
         @Override
+        public void sendPeerBalancingRequest(RobotServiceOuterClass.PeerBalancingRequest request,
+                                             StreamObserver<RobotServiceOuterClass.PeerBalancingResponse> responseObserver) {
+            var cellToBalance = peerRegistry.getDistrict().findCellsToBalance();
+            var balancedPosition = new Position<Integer, Integer>(
+                    request.getPeerBalancingInfo().getBalancedPosition().getX(),
+                    request.getPeerBalancingInfo().getBalancedPosition().getY()
+            );
+            var unBalancedPosition = new Position<Integer, Integer>(
+                    request.getPeerBalancingInfo().getUnbalancedPosition().getX(),
+                    request.getPeerBalancingInfo().getUnbalancedPosition().getY()
+            );
+
+            // I do that cos sometimes happens that we do not send ACKs cos we did not already received the status change
+            // So I answer no, but when I retry we will know that the state of a peer/s is inconsistent and so should be
+            // brought to our current state.
+            boolean stateCheck = peerRegistry.getDistrict().checkIfCellIsBusy(balancedPosition) &&
+                    !peerRegistry.getDistrict().checkIfCellIsBusy(unBalancedPosition);
+
+            if (cellToBalance == null && !stateCheck) {
+                RobotServiceOuterClass.PeerBalancingResponse response = RobotServiceOuterClass.PeerBalancingResponse
+                        .newBuilder()
+                        .setId(peerRegistry.getReferenceRobot().getId())
+                        .setAgree(false)
+                        .build();
+
+                responseObserver.onNext(response);
+                responseObserver.onCompleted();
+
+                return;
+            }
+
+            RobotServiceOuterClass.PeerBalancingResponse response = RobotServiceOuterClass.PeerBalancingResponse
+                    .newBuilder()
+                    .setId(peerRegistry.getReferenceRobot().getId())
+                    .setAgree(true)
+                    .build();
+
+            responseObserver.onNext(response);
+            responseObserver.onCompleted();
+        }
+
+        @Override
         public void sendConnectionInfo(RobotServiceOuterClass.RobotNetworkRequest request,
                                        StreamObserver<RobotServiceOuterClass.RobotNetworkResponse> responseObserver) {
             RobotServiceOuterClass.Server serverInfo = RobotServiceOuterClass.Server
@@ -81,7 +124,18 @@ public class CleaningRobotGRPCServer {
                     "from robot ~ " + request.getId() + " ~ running on " +
                     "server port + " + request.getRobotServer().getPort() + " +";
 
-            peerRegistry.addRobot(request.getId(), request.getRobotServer().getHost(), request.getRobotServer().getPort());
+            Position<Integer, Integer> peerPosition = new Position<>(
+                    request.getPosition().getX(),
+                    request.getPosition().getY()
+            );
+
+            peerRegistry.addRobot(
+                    request.getId(),
+                    request.getRobotServer().getHost(),
+                    request.getRobotServer().getPort(),
+                    peerPosition,
+                    request.getPosition().getDistrictNumber()
+            );
 
             RobotServiceOuterClass.RobotNetworkResponse response = RobotServiceOuterClass.RobotNetworkResponse
                     .newBuilder()
@@ -143,9 +197,9 @@ public class CleaningRobotGRPCServer {
         public void sayGoodbye(RobotServiceOuterClass.GoodbyeRequest request,
                                StreamObserver<RobotServiceOuterClass.GoodbyeResponse> responseObserver) {
 
-            peerRegistry.removeRobot(request.getId());
-
-            boolean success = true;
+//            System.err.println(peerRegistry.getDistrict().getTotalNumberOfRobotsInDistricts());
+            boolean success = peerRegistry.removeRobot(request.getId());
+//            System.err.println(peerRegistry.getDistrict().getTotalNumberOfRobotsInDistricts());
 
             RobotServiceOuterClass.GoodbyeResponse response = RobotServiceOuterClass.GoodbyeResponse
                     .newBuilder()

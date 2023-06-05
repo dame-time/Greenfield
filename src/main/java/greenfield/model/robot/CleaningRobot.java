@@ -5,6 +5,7 @@ import greenfield.model.adminServer.AdministrationServer;
 import com.google.gson.Gson;
 
 import greenfield.model.robot.sensors.AirPollutionSensor;
+import greenfield.model.robot.sensors.DistrictBalanceWatcher;
 import greenfield.model.robot.sensors.HealthChecker;
 import utils.data.CleaningRobotHTTPSetup;
 import utils.data.CleaningRobotStatus;
@@ -28,12 +29,17 @@ public class CleaningRobot {
     private String id;
     private String mqttListenerChannel;
     private int gRPCListenerChannel;
+
     private Position<Integer, Integer> position;
+    private int districtCellNumber;
+    private int districtSize;
+    private int districtSubdivisions;
 
     private CleaningRobotStatus cleaningRobotStatus;
 
     private transient AirPollutionSensor sensor;
     private transient HealthChecker healthChecker;
+    private transient DistrictBalanceWatcher districtBalanceWatcher;
 
     public CleaningRobot() {
         this.id = RandomStringGenerator.generate();
@@ -45,6 +51,10 @@ public class CleaningRobot {
         this.cleaningRobotStatus = CleaningRobotStatus.JOINING;
 
         this.gRPCListenerChannel = RandomPortNumberGenerator.generate();
+
+        this.districtCellNumber = -1;
+        this.districtSize = -1;
+        this.districtSubdivisions = -1;
     }
 
     public boolean requestToJoinNetwork() {
@@ -81,6 +91,9 @@ public class CleaningRobot {
                 Gson gson = new Gson();
                 CleaningRobotHTTPSetup response = gson.fromJson(sb.toString(), CleaningRobotHTTPSetup.class);
 
+                this.districtSubdivisions = response.getDistrictsSubdivisions();
+                this.districtSize = response.getDistrictSize();
+                this.districtCellNumber = response.getDistrictCell().districtNumber;
                 this.position = response.getDistrictCell().position;
 
                 String publishingDistrictNumber = String.valueOf(response.getDistrictCell().districtNumber);
@@ -89,15 +102,17 @@ public class CleaningRobot {
                 var otherRobots = robots.stream().filter(e -> !Objects.equals(e.getId(), this.id)).toList();
 
                 this.healthChecker = new HealthChecker(this, otherRobots);
+                this.districtBalanceWatcher = new DistrictBalanceWatcher(this.healthChecker);
 
                 this.cleaningRobotStatus = CleaningRobotStatus.ACTIVE;
 
                 this.mqttListenerChannel += publishingDistrictNumber;
 
-                this.sensor = new AirPollutionSensor(this.id, this.mqttListenerChannel);
+                this.sensor = new AirPollutionSensor(this);
 
                 this.sensor.start();
                 this.healthChecker.start();
+                this.districtBalanceWatcher.start();
 
                 result = true;
             } else {
@@ -132,6 +147,7 @@ public class CleaningRobot {
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 this.sensor.stopSensor();
                 this.healthChecker.shutDownHealthChecker();
+                this.districtBalanceWatcher.shutDownDistrictBalanceWatcher();
 
                 freeRobotGRPCListenerPort();
 
@@ -153,6 +169,7 @@ public class CleaningRobot {
         this.sensor.stopSensor();
         this.healthChecker.crashHealthChecker();
         this.healthChecker.shutDownHealthChecker();
+        this.districtBalanceWatcher.shutDownDistrictBalanceWatcher();
     }
 
     public void fix() {
@@ -179,6 +196,18 @@ public class CleaningRobot {
         return gRPCListenerChannel;
     }
 
+    public int getDistrictCellNumber() {
+        return districtCellNumber;
+    }
+
+    public int getDistrictSize() {
+        return districtSize;
+    }
+
+    public int getDistrictSubdivisions() {
+        return districtSubdivisions;
+    }
+
     public void setId(String id) {
         this.id = id;
     }
@@ -197,6 +226,14 @@ public class CleaningRobot {
 
     public void setgRPCListenerChannel(int gRPCListenerChannel) {
         this.gRPCListenerChannel = gRPCListenerChannel;
+    }
+
+    public void setDistrictCell(int districtCellNumber) {
+        this.districtCellNumber = districtCellNumber;
+    }
+
+    public void setDistrictSubdivisions(int districtSubdivisions) {
+        this.districtSubdivisions = districtSubdivisions;
     }
 
     private void freeRobotGRPCListenerPort() {

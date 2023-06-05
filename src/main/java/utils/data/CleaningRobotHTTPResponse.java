@@ -8,10 +8,19 @@ import java.util.Objects;
 public final class CleaningRobotHTTPResponse {
     private DistrictCell districtCell;
     private List<CleaningRobot> currentCleaningRobots;
+    private int districtSize;
+    private int districtsSubdivisions;
 
-    public CleaningRobotHTTPResponse(DistrictCell districtCell, List<CleaningRobot> currentCleaningRobots) {
+    public CleaningRobotHTTPResponse(
+            DistrictCell districtCell,
+            List<CleaningRobot> currentCleaningRobots,
+            int districtSize,
+            int districtsSubdivisions
+    ) {
         this.districtCell = districtCell;
         this.currentCleaningRobots = currentCleaningRobots;
+        this.districtSize = districtSize;
+        this.districtsSubdivisions = districtsSubdivisions;
     }
 
     public DistrictCell getDistrictCell() {
@@ -22,12 +31,28 @@ public final class CleaningRobotHTTPResponse {
         return currentCleaningRobots;
     }
 
+    public int getDistrictSize() {
+        return districtSize;
+    }
+
+    public int getDistrictsSubdivisions() {
+        return districtsSubdivisions;
+    }
+
     public void setDistrictCell(DistrictCell districtCell) {
         this.districtCell = districtCell;
     }
 
     public void setCurrentCleaningRobots(List<CleaningRobot> currentCleaningRobots) {
         this.currentCleaningRobots = currentCleaningRobots;
+    }
+
+    public void setDistrictSize(int districtSize) {
+        this.districtSize = districtSize;
+    }
+
+    public void setDistrictsSubdivisions(int districtsSubdivisions) {
+        this.districtsSubdivisions = districtsSubdivisions;
     }
 
     @Override
@@ -46,8 +71,11 @@ public final class CleaningRobotHTTPResponse {
 
     @Override
     public String toString() {
-        return "CleaningRobotHTTPResponse[" +
-                "districtCell=" + districtCell + ", " +
-                "currentCleaningRobots=" + currentCleaningRobots + ']';
+        return "CleaningRobotHTTPResponse{" +
+                "districtCell=" + districtCell +
+                ", currentCleaningRobots=" + currentCleaningRobots +
+                ", districtSize=" + districtSize +
+                ", districtsSubdivisions=" + districtsSubdivisions +
+                '}';
     }
 }

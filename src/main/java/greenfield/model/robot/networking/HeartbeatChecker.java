@@ -3,6 +3,7 @@ package greenfield.model.robot.networking;
 import greenfield.model.adminServer.AdministrationServer;
 import greenfield.model.robot.grpc.CleaningRobotGRPCClient;
 import greenfield.model.robot.grpc.PeerRegistry;
+import greenfield.model.robot.utils.BalancingACKReceiver;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -45,7 +46,8 @@ public class HeartbeatChecker extends Thread {
             // 9 seconds of interval before I remove a peer from my map, basically I give him 3 window to answer properly
             int THRESHOLD = 9;
             if (now.getEpochSecond() - peer.lastHeartbeat.getEpochSecond() > THRESHOLD) {
-                registry.removePeer(peer.id);
+                System.out.println("CRASH NOTICED!");
+                registry.removeRobot(peer.id);
 
                 removeFailingRobotFromAdministrationServer(peer.id);
             }

@@ -25,7 +25,7 @@ public class AdministrationServerRegister {
 
     public static District getDistricts() {
         synchronized (district) {
-            return new District(district);
+            return district;
         }
     }
 

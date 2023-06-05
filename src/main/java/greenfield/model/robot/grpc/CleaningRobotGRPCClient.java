@@ -2,8 +2,12 @@ package greenfield.model.robot.grpc;
 
 import greenfield.model.adminServer.AdministrationServer;
 import greenfield.model.robot.CleaningRobot;
+import greenfield.model.robot.utils.BalancingACKReceiver;
+import greenfield.model.robot.utils.PeerBalancingInfo;
 import io.grpc.stub.StreamObserver;
 import proto.RobotServiceOuterClass;
+import utils.data.DistrictCell;
+import utils.data.Pair;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -30,6 +34,7 @@ public class CleaningRobotGRPCClient {
                 .newBuilder()
                 .setX(this.referenceRobot.getPosition().getX())
                 .setY(this.referenceRobot.getPosition().getY())
+                .setDistrictNumber(this.referenceRobot.getDistrictCellNumber())
                 .build();
 
         RobotServiceOuterClass.RobotNetworkRequest request = RobotServiceOuterClass.RobotNetworkRequest
@@ -133,7 +138,7 @@ public class CleaningRobotGRPCClient {
                                 if (throwable instanceof io.grpc.StatusRuntimeException statusException) {
                                     if (statusException.getStatus().getCode() == io.grpc.Status.UNAVAILABLE.getCode()) {
                                         System.out.println("Peer " + entry.getKey() + " is unavailable, removing from map");
-                                        peerRegistry.removePeer(entry.getKey());
+                                        peerRegistry.removeRobot(entry.getKey());
 
                                         removeFailingRobotFromAdministrationServer(entry.getKey());
                                     }
@@ -162,6 +167,10 @@ public class CleaningRobotGRPCClient {
                     public void onNext(RobotServiceOuterClass.GoodbyeResponse response) {
                         if (response.getResult()) {
                             System.out.println("Successfully said goodbye. Removing robot from local map.");
+
+                            removeFailingRobotFromAdministrationServer(request.getId());
+
+                            peerRegistry.getDistrict().removeRobotFromPosition(referenceRobot.getPosition());
                         } else {
                             System.err.println("Failed to say goodbye.");
                         }
@@ -174,15 +183,13 @@ public class CleaningRobotGRPCClient {
 
                     @Override
                     public void onCompleted() {
-                        System.out.println("Goodbye process completed.");
+
                     }
                 };
 
-        for (Map.Entry<String, PeerRegistry.Peer> entry : peerRegistry.getConnectedPeers().entrySet()) {
-            if (!entry.getKey().equals(this.referenceRobot.getId())) {
+        for (Map.Entry<String, PeerRegistry.Peer> entry : peerRegistry.getConnectedPeers().entrySet())
+            if (!entry.getKey().equals(this.referenceRobot.getId()))
                 entry.getValue().stub.sayGoodbye(request, responseObserver);
-            }
-        }
     }
 
     private static void removeFailingRobotFromAdministrationServer(String robotID) {
@@ -204,5 +211,64 @@ public class CleaningRobotGRPCClient {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void broadcastPeerBalancingInfo(Pair<DistrictCell, DistrictCell> districtCells) {
+        RobotServiceOuterClass.Position grpcUnbalancedPosition = RobotServiceOuterClass.Position
+                .newBuilder()
+                .setDistrictNumber(districtCells.getFirst().districtNumber)
+                .setX(districtCells.getFirst().position.getX())
+                .setX(districtCells.getFirst().position.getY())
+                .build();
+
+        RobotServiceOuterClass.Position grpcBalancedPosition = RobotServiceOuterClass.Position
+                .newBuilder()
+                .setDistrictNumber(districtCells.getSecond().districtNumber)
+                .setX(districtCells.getSecond().position.getX())
+                .setX(districtCells.getSecond().position.getY())
+                .build();
+
+        RobotServiceOuterClass.PeerBalancingInfo grpcPeerBalancingInfo =
+                RobotServiceOuterClass.PeerBalancingInfo
+                        .newBuilder()
+                        .setUnbalancedPosition(grpcUnbalancedPosition)
+                        .setBalancedPosition(grpcBalancedPosition)
+                        .build();
+
+        RobotServiceOuterClass.PeerBalancingRequest request =
+                RobotServiceOuterClass.PeerBalancingRequest
+                        .newBuilder()
+                        .setSenderID(this.referenceRobot.getId())
+                        .setPeerBalancingInfo(grpcPeerBalancingInfo)
+                        .build();
+
+        StreamObserver<RobotServiceOuterClass.PeerBalancingResponse> responseObserver = new StreamObserver<>() {
+            @Override
+            public void onNext(RobotServiceOuterClass.PeerBalancingResponse response) {
+                if (response.getAgree()) {
+                    peerRegistry.addChangeDistrictsACK(response.getId());
+                    System.out.println("Peer -" + referenceRobot.getId() + "- received district " +
+                            "ACK from +" + response.getId() + "+ total: " + peerRegistry.getChangeDistrictsACKReceived());
+                }
+                else {
+                    System.err.println("Peer -" + referenceRobot.getId() + "- did not receive district " +
+                            "ACK from +" + response.getId() + "+");
+                }
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+
+            }
+        };
+
+        for (Map.Entry<String, PeerRegistry.Peer> entry : peerRegistry.getConnectedPeers().entrySet())
+            if (!entry.getKey().equals(this.referenceRobot.getId()))
+                entry.getValue().stub.sendPeerBalancingRequest(request, responseObserver);
     }
 }

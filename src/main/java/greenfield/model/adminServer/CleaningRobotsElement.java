@@ -3,7 +3,6 @@ package greenfield.model.adminServer;
 import greenfield.model.robot.CleaningRobot;
 import utils.data.DistrictCell;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,5 +41,13 @@ public class CleaningRobotsElement {
             return false;
         AdministrationServerRegister.replaceRobot(oldRobotIndex, newRobot);
         return true;
+    }
+
+    public static int getDistrictSize() {
+        return AdministrationServerRegister.getDistricts().getWidth();
+    }
+
+    public static int getDistrictsSubdivisions() {
+        return AdministrationServerRegister.getDistricts().getSubdivisions();
     }
 }

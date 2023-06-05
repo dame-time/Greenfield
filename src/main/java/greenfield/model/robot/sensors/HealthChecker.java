@@ -6,12 +6,13 @@ import greenfield.model.robot.grpc.CleaningRobotGRPCServer;
 import greenfield.model.robot.grpc.PeerRegistry;
 import greenfield.model.robot.networking.HeartbeatChecker;
 import greenfield.model.robot.utils.ACKReceiver;
-import proto.RobotServiceOuterClass;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
+// TODO: Setup a way to change position when robot in districts are unbalanced
+// TODO: Change/delete the position watcher thread
 public class HealthChecker extends Thread {
     private final CleaningRobot referenceRobot;
 
@@ -41,9 +42,12 @@ public class HealthChecker extends Thread {
 
         this.client = new CleaningRobotGRPCClient(this.referenceRobot, this.peerRegistry);
 
-        for (CleaningRobot robot : robotsNetwork) {
-            this.peerRegistry.addRobot(robot.getId(), "localhost", robot.getgRPCListenerChannel());
-        }
+        for (CleaningRobot robot : robotsNetwork)
+            this.peerRegistry.addRobot(robot.getId(),
+                    "localhost",
+                    robot.getgRPCListenerChannel(),
+                    robot.getPosition(),
+                    robot.getDistrictCellNumber());
 
         this.client.broadcastRobotData();
 
@@ -52,7 +56,7 @@ public class HealthChecker extends Thread {
 
         this.positionWatcher = new PositionWatcher(this.referenceRobot, this.client);
         this.heartbeatChecker = new HeartbeatChecker(this.client, this.peerRegistry);
-        this.positionWatcher.start();
+//        this.positionWatcher.start();
         this.heartbeatChecker.start();
 
         this.shouldCrash = false;
@@ -86,7 +90,7 @@ public class HealthChecker extends Thread {
 
         if (!shouldCrash)
             this.client.sayGoodbyeToAll();
-        this.positionWatcher.shutDownWatcher();
+//        this.positionWatcher.shutDownWatcher();
         this.heartbeatChecker.shutDownHeartbeatChecker();
     }
 

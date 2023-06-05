@@ -2,6 +2,7 @@ package greenfield.model.robot.sensors;
 
 import greenfield.model.mqttConnections.MQTTAsyncClient;
 import greenfield.model.mqttConnections.MQTTMessageBuilder;
+import greenfield.model.robot.CleaningRobot;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -23,23 +24,21 @@ public class AirPollutionSensor extends Thread {
     private final PM10Simulator simulator;
     private final Buffer airPollutionBuffer;
 
-    private final String senderID;
+    private final CleaningRobot referenceRobot;
 
     private final MQTTAsyncClient client;
-    private final String publishChannel;
 
     private boolean stopCondition;
 
-    public AirPollutionSensor(String robotID, String publishChannel) throws MqttException {
+    public AirPollutionSensor(CleaningRobot referenceRobot) throws MqttException {
         this.avgMeasurements = new ArrayList<>();
 
         this.airPollutionBuffer = new BufferImpl();
         this.simulator = new PM10Simulator(airPollutionBuffer);
 
-        this.senderID = robotID;
+        this.referenceRobot = referenceRobot;
 
-        this.client = new MQTTAsyncClient(robotID);
-        this.publishChannel = publishChannel;
+        this.client = new MQTTAsyncClient(referenceRobot.getId());
 
         this.stopCondition = false;
     }
@@ -124,7 +123,7 @@ public class AirPollutionSensor extends Thread {
                     .map(Measurement::getTimestamp)
                     .orElse(System.currentTimeMillis());
 
-            avgMeasurements.add(new AirPollutionMeasurement(average, maxTimestampInBatch, this.senderID));
+            avgMeasurements.add(new AirPollutionMeasurement(average, maxTimestampInBatch, this.referenceRobot.getId()));
         }
 
         if (remainder > 0)
@@ -147,7 +146,7 @@ public class AirPollutionSensor extends Thread {
         var airPollutionMessage =    AirPollutionMessageOuterClass.AirPollutionMessage.newBuilder()
                                     .addAllMeasurements(airPollutionMeasurements)
                                     .setTimestamp(System.currentTimeMillis())
-                                    .setSenderID(this.senderID)
+                                    .setSenderID(this.referenceRobot.getId())
                                     .build();
 
         MqttMessage message = new    MQTTMessageBuilder()
@@ -156,7 +155,7 @@ public class AirPollutionSensor extends Thread {
                                     .build();
 
         try {
-            this.client.publishMessage(this.publishChannel, message);
+            this.client.publishMessage(this.referenceRobot.getMqttListenerChannel(), message);
         } catch (MqttException e) {
             throw new RuntimeException(e);
         }

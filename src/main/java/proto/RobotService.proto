@@ -7,6 +7,7 @@ service RobotService {
   rpc SayGoodbye (GoodbyeRequest) returns (GoodbyeResponse) {}
   rpc RequestMutex(MutexRequest) returns (MutexResponse) {}
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse) {}
+  rpc SendPeerBalancingRequest(PeerBalancingRequest) returns (PeerBalancingResponse) {}
 }
 
 message RobotNetworkRequest {
@@ -23,6 +24,7 @@ message Server {
 message Position {
   int32 x = 1;
   int32 y = 2;
+  int32 districtNumber = 3;
 }
 
 message RobotNetworkResponse {
@@ -55,5 +57,20 @@ message HeartbeatRequest {
 
 message HeartbeatResponse {
   bool success = 1;
+}
+
+message PeerBalancingInfo {
+  Position unbalancedPosition = 1;
+  Position balancedPosition = 2;
+}
+
+message PeerBalancingRequest {
+  string senderID = 1;
+  PeerBalancingInfo peerBalancingInfo = 2;
+}
+
+message PeerBalancingResponse {
+  string id = 1;
+  bool agree = 2;
 }
 
