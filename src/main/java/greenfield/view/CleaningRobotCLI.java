@@ -1,13 +1,12 @@
 package greenfield.view;
 
+import greenfield.controller.CleaningRobotController;
 import greenfield.model.robot.CleaningRobot;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 public class CleaningRobotCLI {
-    private static final Map<String, CleaningRobot> robots = new HashMap<>();
+    private static final CleaningRobotController controller = new CleaningRobotController();
 
     public static void main(String[] args) {
         System.out.println("\033[1;33m" + "Welcome to the Cleaning Robot CLI! Please use the following commands:" + "\033[0m");
@@ -39,7 +38,7 @@ public class CleaningRobotCLI {
 
             switch (parts[0].toLowerCase()) {
                 case "print" -> System.out.println("\033[1;32m" + "Current Robots connected: " +
-                        robots.values().stream().map(CleaningRobot::getId).toList() + "\033[0m");
+                        controller.getRobots().values().stream().map(CleaningRobot::getId).toList() + "\033[0m");
                 case "create" -> {
                     int numRobots = 1;
                     if (parts.length > 1) {
@@ -49,32 +48,11 @@ public class CleaningRobotCLI {
                             System.out.println("\033[0;31m" + "Invalid number of robots. Creating one robot." + "\033[0m");
                         }
                     }
-                    for (int i = 0; i < numRobots; i++) {
-                        var cleaningRobot = new CleaningRobot();
-                        cleaningRobot.requestToJoinNetwork();
-                        robots.put(cleaningRobot.getId(), cleaningRobot);
-                    }
+                    controller.createRobot(numRobots);
                 }
-                case "delete" -> {
-                    if (robots.get(robotId) != null) {
-                        robots.get(robotId).disconnectFromServer();
-                        robots.remove(robotId);
-                    } else
-                        System.out.println("\033[0;31m" + "No robot found with ID: " + robotId + "\033[0m");
-                }
-                case "fix" -> {
-                    if (robots.get(robotId) != null)
-                        robots.get(robotId).fix();
-                    else
-                        System.out.println("\033[0;31m" + "No robot found with ID: " + robotId + "\033[0m");
-                }
-                case "crash" -> {
-                    if (robots.get(robotId) != null) {
-                        robots.get(robotId).crash();
-                        robots.remove(robotId);
-                    } else
-                        System.out.println("\033[0;31m" + "No robot found with ID: " + robotId + "\033[0m");
-                }
+                case "delete" -> controller.deleteRobot(robotId);
+                case "fix" -> controller.fixRobot(robotId);
+                case "crash" -> controller.crashRobot(robotId);
                 default -> System.out.println("\033[0;31m" + "Invalid command, please try again." + "\033[0m");
             }
         }

@@ -73,11 +73,11 @@ public class CleaningRobotGRPCServer {
         public void sendPeerBalancingRequest(RobotServiceOuterClass.PeerBalancingRequest request,
                                              StreamObserver<RobotServiceOuterClass.PeerBalancingResponse> responseObserver) {
             var cellToBalance = peerRegistry.getDistrict().findCellsToBalance();
-            var balancedPosition = new Position<Integer, Integer>(
+            var balancedPosition = new Position<>(
                     request.getPeerBalancingInfo().getBalancedPosition().getX(),
                     request.getPeerBalancingInfo().getBalancedPosition().getY()
             );
-            var unBalancedPosition = new Position<Integer, Integer>(
+            var unBalancedPosition = new Position<>(
                     request.getPeerBalancingInfo().getUnbalancedPosition().getX(),
                     request.getPeerBalancingInfo().getUnbalancedPosition().getY()
             );
@@ -85,8 +85,8 @@ public class CleaningRobotGRPCServer {
             // I do that cos sometimes happens that we do not send ACKs cos we did not already received the status change
             // So I answer no, but when I retry we will know that the state of a peer/s is inconsistent and so should be
             // brought to our current state.
-            boolean stateCheck = peerRegistry.getDistrict().checkIfCellIsBusy(balancedPosition) &&
-                    !peerRegistry.getDistrict().checkIfCellIsBusy(unBalancedPosition);
+            boolean stateCheck = peerRegistry.getDistrict().checkIfCellIsBusy(balancedPosition);
+//                    && !peerRegistry.getDistrict().checkIfCellIsBusy(unBalancedPosition);
 
             if (cellToBalance == null && !stateCheck) {
                 RobotServiceOuterClass.PeerBalancingResponse response = RobotServiceOuterClass.PeerBalancingResponse
