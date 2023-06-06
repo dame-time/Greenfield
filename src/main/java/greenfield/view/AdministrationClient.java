@@ -3,7 +3,6 @@ package greenfield.view;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import greenfield.model.adminServer.AdministrationServer;
-import utils.data.CleaningRobotIDsHTTPResponse;
 import utils.data.StatisticsHTTPResponse;
 
 import java.io.BufferedReader;
