@@ -56,12 +56,14 @@ public class PeerRegistry {
         public Map<String, Boolean> mutexACKReceived;
         public long requestTimestamp;
         public List<Peer> waitingPeers;
+        public int requestLogicalTimestamp;
 
         public RobotMechanic() {
             this.needsRepairing = false;
             this.isRepairing = false;
             this.mutexACKReceived = new HashMap<>();
             this.requestTimestamp = -1;
+            this.requestLogicalTimestamp = -1;
             this.waitingPeers = new ArrayList<>();
         }
 
@@ -71,6 +73,7 @@ public class PeerRegistry {
             this.mutexACKReceived = copy.mutexACKReceived;
             this.requestTimestamp = copy.requestTimestamp;
             this.waitingPeers = copy.waitingPeers;
+            this.requestLogicalTimestamp = copy.requestLogicalTimestamp;
         }
     }
 
@@ -214,6 +217,7 @@ public class PeerRegistry {
         this.getRobotMechanic().needsRepairing = false;
         this.getRobotMechanic().isRepairing = false;
         this.getRobotMechanic().requestTimestamp = -1;
+        this.getRobotMechanic().requestLogicalTimestamp = -1;
     }
 
     public synchronized CleaningRobot getReferenceRobot() {

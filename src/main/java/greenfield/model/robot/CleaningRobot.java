@@ -7,6 +7,8 @@ import com.google.gson.Gson;
 import greenfield.model.robot.sensors.AirPollutionSensor;
 import greenfield.model.robot.sensors.DistrictBalanceWatcher;
 import greenfield.model.robot.sensors.HealthChecker;
+import greenfield.model.robot.utils.Clock;
+import greenfield.model.robot.utils.LogicalClock;
 import utils.data.CleaningRobotHTTPSetup;
 import utils.data.CleaningRobotStatus;
 import utils.data.Position;
@@ -23,7 +25,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.Objects;
 
-// TODO: Pass also a district so I can give it to other robots
 @XmlRootElement(name = "robot")
 public class CleaningRobot {
     private String id;
@@ -41,6 +42,9 @@ public class CleaningRobot {
     private transient HealthChecker healthChecker;
     private transient DistrictBalanceWatcher districtBalanceWatcher;
 
+    private final transient Clock internalClock;
+    private final transient LogicalClock logicalClock;
+
     public CleaningRobot() {
         this.id = RandomStringGenerator.generate();
 
@@ -55,6 +59,9 @@ public class CleaningRobot {
         this.districtCellNumber = -1;
         this.districtSize = -1;
         this.districtSubdivisions = -1;
+
+        this.internalClock = new Clock(true, 1000);
+        this.logicalClock = new LogicalClock();
     }
 
     public boolean requestToJoinNetwork() {
@@ -206,6 +213,14 @@ public class CleaningRobot {
 
     public int getDistrictSubdivisions() {
         return districtSubdivisions;
+    }
+
+    public Clock getInternalClock() {
+        return internalClock;
+    }
+
+    public synchronized LogicalClock getLogicalClock() {
+        return logicalClock;
     }
 
     public void setId(String id) {

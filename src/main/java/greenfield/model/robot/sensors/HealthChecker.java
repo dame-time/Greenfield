@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-// TODO: Setup a way to change position when robot in districts are unbalanced
 // TODO: Change/delete the position watcher thread
 public class HealthChecker extends Thread {
     private final CleaningRobot referenceRobot;
@@ -100,7 +99,12 @@ public class HealthChecker extends Thread {
             this.getPeerRegistry().getRobotMechanic().isRepairing)
             return;
 
+        this.referenceRobot.getLogicalClock().update();
+
         this.getPeerRegistry().getRobotMechanic().needsRepairing = true;
+        this.getPeerRegistry().getRobotMechanic().requestTimestamp = this.referenceRobot.getInternalClock().getTime();
+        this.getPeerRegistry().getRobotMechanic().requestLogicalTimestamp = this.referenceRobot.getLogicalClock().getClock();
+
         this.client.broadcastMutualExclusion();
         new ACKReceiver(this).start();
     }

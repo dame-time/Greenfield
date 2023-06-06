@@ -172,12 +172,30 @@ public class CleaningRobotGRPCServer {
         @Override
         public void requestMutex(RobotServiceOuterClass.MutexRequest request,
                                  StreamObserver<RobotServiceOuterClass.MutexResponse> responseObserver) {
+            this.peerRegistry.getReferenceRobot().getLogicalClock().compareAndUpdate(request.getLogicalTimestamp());
+
             // Append to a queue of buffered nodes to answer with an OK when I am done
             if (this.peerRegistry.getRobotMechanic().isRepairing ||
                     (this.peerRegistry.getRobotMechanic().needsRepairing
-                    && this.peerRegistry.getRobotMechanic().requestTimestamp < request.getTimestamp())) {
+                    && this.peerRegistry.getRobotMechanic().requestLogicalTimestamp <
+                            this.peerRegistry.getReferenceRobot().getLogicalClock().getClock())
+            ) {
                 this.queuedMutexRequests.add(
-                        new MutexRequestHandler(peerRegistry.getReferenceRobot().getId(), responseObserver));
+                        new MutexRequestHandler(peerRegistry.getReferenceRobot().getId(), responseObserver, peerRegistry));
+                return;
+            }
+
+            int currentIDValue = peerRegistry.getReferenceRobot()
+                    .getId().chars().boxed().mapToInt(Integer::intValue).sum();
+            int otherIDValue = request.getId().chars().boxed().mapToInt(Integer::intValue).sum();
+
+            // tiebreaker case, as we did at lesson
+            if (this.peerRegistry.getRobotMechanic().requestLogicalTimestamp ==
+                    this.peerRegistry.getReferenceRobot().getLogicalClock().getClock()
+                && currentIDValue > otherIDValue
+            ) {
+                this.queuedMutexRequests.add(
+                        new MutexRequestHandler(peerRegistry.getReferenceRobot().getId(), responseObserver, peerRegistry));
                 return;
             }
 
@@ -187,6 +205,7 @@ public class CleaningRobotGRPCServer {
                     .newBuilder()
                     .setId(peerRegistry.getReferenceRobot().getId())
                     .setAck(ACK)
+                    .setLogicalTimestamp(peerRegistry.getReferenceRobot().getLogicalClock().getClock())
                     .build();
 
             responseObserver.onNext(response);

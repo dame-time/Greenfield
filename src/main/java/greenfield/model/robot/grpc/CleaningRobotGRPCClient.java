@@ -84,7 +84,8 @@ public class CleaningRobotGRPCClient {
         RobotServiceOuterClass.MutexRequest request = RobotServiceOuterClass.MutexRequest
                 .newBuilder()
                 .setId(this.referenceRobot.getId())
-                .setTimestamp(System.currentTimeMillis())
+                .setTimestamp(this.referenceRobot.getInternalClock().getTime())
+                .setLogicalTimestamp(this.referenceRobot.getLogicalClock().getClock())
                 .build();
 
         StreamObserver<RobotServiceOuterClass.MutexResponse> responseObserver =
@@ -95,6 +96,8 @@ public class CleaningRobotGRPCClient {
                             System.out.println("Peer -" + referenceRobot.getId() + "- received ACK from +" + response.getId()+ "+");
                             peerRegistry.getRobotMechanic().mutexACKReceived.put(response.getId(), response.getAck());
                         }
+
+                        referenceRobot.getLogicalClock().compareAndUpdate(response.getLogicalTimestamp());
                     }
 
                     @Override

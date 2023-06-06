@@ -44,11 +44,13 @@ message GoodbyeResponse {
 message MutexRequest {
   string id = 1;
   int64 timestamp = 2;
+  int32 logicalTimestamp = 3;
 }
 
 message MutexResponse {
   string id = 1;
   bool ack = 2;
+  int32 logicalTimestamp = 3;
 }
 
 message HeartbeatRequest {
