@@ -19,9 +19,11 @@ public class Mechanic extends Thread {
             Thread.currentThread().interrupt();
         }
 
-        System.out.println("Finished repairing robot: " + this.healthChecker.getReferenceRobot().getId());
+        if (!this.healthChecker.shouldCrash()) {
+            System.out.println("Finished repairing robot: " + this.healthChecker.getReferenceRobot().getId());
 
-        this.healthChecker.getServer().releaseMutex();
-        this.healthChecker.getPeerRegistry().leaveMechanic();
+            this.healthChecker.getServer().releaseMutex();
+            this.healthChecker.getPeerRegistry().leaveMechanic();
+        }
     }
 }

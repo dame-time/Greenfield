@@ -124,4 +124,8 @@ public class HealthChecker extends Thread {
     public synchronized CleaningRobotGRPCServer getServer() {
         return server;
     }
+
+    public synchronized boolean shouldCrash() {
+        return shouldCrash;
+    }
 }
