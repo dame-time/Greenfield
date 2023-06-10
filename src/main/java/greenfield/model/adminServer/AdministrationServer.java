@@ -24,7 +24,7 @@ public class AdministrationServer {
 
     private static HttpServer server;
 
-    private static SingleCrashedRobotHandler singleCrashedRobotHandler;
+    public static SingleCrashedRobotHandler singleCrashedRobotHandler;
 
     public static void startRESTServer() {
         final ResourceConfig rc = new ResourceConfig().packages("greenfield.model.adminServer",

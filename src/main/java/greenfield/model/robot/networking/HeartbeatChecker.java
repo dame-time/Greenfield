@@ -14,28 +14,32 @@ public class HeartbeatChecker extends Thread {
 
     private final CleaningRobotGRPCClient client;
     private final PeerRegistry registry;
+    private boolean isRunning = true;
 
     public HeartbeatChecker(CleaningRobotGRPCClient client, PeerRegistry registry) {
         this.client = client;
         this.registry = registry;
+        this.isRunning = true;
     }
 
     public synchronized void shutDownHeartbeatChecker() {
-        this.interrupt();
+        this.isRunning = false;
+        this.notifyAll();
     }
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (isRunning) {
             client.broadcastHeartbeat();
-
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-
             checkForCrashes();
+
+            synchronized (this) {
+                try {
+                    wait(3000);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
         }
     }
 
@@ -48,6 +52,7 @@ public class HeartbeatChecker extends Thread {
             if (now.getEpochSecond() - peer.lastHeartbeat.getEpochSecond() > THRESHOLD) {
                 System.out.println("CRASH NOTICED!");
                 registry.removeRobot(peer.id);
+                registry.getRobotMechanic().awakeDueToPeerFailure();
 
                 removeFailingRobotFromAdministrationServer(peer.id);
             }

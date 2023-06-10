@@ -94,7 +94,7 @@ public class CleaningRobotGRPCClient {
                     public void onNext(RobotServiceOuterClass.MutexResponse response) {
                         if (response.getAck()) {
                             System.out.println("Peer -" + referenceRobot.getId() + "- received ACK from +" + response.getId()+ "+");
-                            peerRegistry.getRobotMechanic().mutexACKReceived.put(response.getId(), response.getAck());
+                            peerRegistry.getRobotMechanic().putACKInReceivedACKs(response.getId(), response.getAck());
                         }
 
                         referenceRobot.getLogicalClock().compareAndUpdate(response.getLogicalTimestamp());
@@ -108,13 +108,13 @@ public class CleaningRobotGRPCClient {
                     @Override
                     public void onCompleted() {
                         System.out.println("Peer -" + referenceRobot.getId() + "- received: "
-                                + peerRegistry.getRobotMechanic().mutexACKReceived + "ACKs");
+                                + peerRegistry.getRobotMechanic().getMutexACKReceived() + "ACKs");
                     }
                 };
 
         for (Map.Entry<String, PeerRegistry.Peer> entry : peerRegistry.getConnectedPeers().entrySet()) {
             if (!entry.getKey().equals(this.referenceRobot.getId())) {
-                peerRegistry.getRobotMechanic().mutexACKReceived.put(entry.getKey(), false);
+                peerRegistry.getRobotMechanic().putACKInReceivedACKs(entry.getKey(), false);
                 entry.getValue().stub.requestMutex(request, responseObserver);
             }
         }

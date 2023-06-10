@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AdministrationClientController {
@@ -16,7 +17,13 @@ public class AdministrationClientController {
 
     public List<String> getAllRobotIDs() throws IOException {
         String endpointURL = serverURL + "robotsInfo/ids";
-        return new Gson().fromJson(getResponseFrom(endpointURL).toString(), new TypeToken<List<String>>(){}.getType());
+
+        String responseString = getResponseFrom(endpointURL).toString();
+
+        if (responseString.equals("There are currently no robots in the network, try again later!"))
+            return new ArrayList<>();
+
+        return new Gson().fromJson(responseString, new TypeToken<List<String>>(){}.getType());
     }
 
     public StatisticsHTTPResponse getRobotStats(String robotID, int n) throws IOException {

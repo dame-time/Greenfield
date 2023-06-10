@@ -23,6 +23,8 @@ public class CleaningRobotsElement {
         robot.setMqttListenerChannel(String.valueOf(districtCell.districtNumber));
         AdministrationServerRegister.addCleaningRobot(robot);
 
+        AdministrationServer.singleCrashedRobotHandler.awake();
+
         return districtCell;
     }
 
@@ -33,6 +35,8 @@ public class CleaningRobotsElement {
     public static boolean removeRobot(String robotID) {
         if (!robotExists(robotID))
             return false;
+
+        AdministrationServer.singleCrashedRobotHandler.awake();
         return AdministrationServerRegister.removeRobot(robotID);
     }
 

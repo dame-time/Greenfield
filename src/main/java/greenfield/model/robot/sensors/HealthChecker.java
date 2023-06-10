@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Random;
 
-// TODO: Change/delete the position watcher thread
 public class HealthChecker extends Thread {
     private final CleaningRobot referenceRobot;
 
@@ -22,7 +21,6 @@ public class HealthChecker extends Thread {
     private final Random randomGenerator;
     private double chance;
 
-    private final PositionWatcher positionWatcher;
     private final HeartbeatChecker heartbeatChecker;
 
     private boolean shouldCrash;
@@ -53,9 +51,7 @@ public class HealthChecker extends Thread {
         this.randomGenerator = new Random();
         this.chance = this.randomGenerator.nextDouble();
 
-        this.positionWatcher = new PositionWatcher(this.referenceRobot, this.client);
         this.heartbeatChecker = new HeartbeatChecker(this.client, this.peerRegistry);
-//        this.positionWatcher.start();
         this.heartbeatChecker.start();
 
         this.shouldCrash = false;
@@ -89,7 +85,6 @@ public class HealthChecker extends Thread {
 
         if (!shouldCrash)
             this.client.sayGoodbyeToAll();
-//        this.positionWatcher.shutDownWatcher();
         this.heartbeatChecker.shutDownHeartbeatChecker();
     }
 
@@ -106,7 +101,8 @@ public class HealthChecker extends Thread {
         this.getPeerRegistry().getRobotMechanic().requestLogicalTimestamp = this.referenceRobot.getLogicalClock().getClock();
 
         this.client.broadcastMutualExclusion();
-        new ACKReceiver(this).start();
+        this.getPeerRegistry().getRobotMechanic().ackReceiverThread = new ACKReceiver(this);
+        this.getPeerRegistry().getRobotMechanic().ackReceiverThread.start();
     }
 
     public synchronized PeerRegistry getPeerRegistry() {

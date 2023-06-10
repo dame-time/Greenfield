@@ -22,10 +22,9 @@ public class ACKReceiver extends Thread {
         while (!areAllACKsReceived() && !Thread.currentThread().isInterrupted()) {
 
             try {
-                Thread.sleep(500);
+                healthChecker.getPeerRegistry().getRobotMechanic().waitForACKsReceived();
             } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                return;
+                throw new RuntimeException(e);
             }
 
             clearDeadPeersACKs();
@@ -36,16 +35,16 @@ public class ACKReceiver extends Thread {
     }
 
     private boolean areAllACKsReceived() {
-        return healthChecker.getPeerRegistry().getRobotMechanic().mutexACKReceived.values().stream().allMatch(e -> e);
+        return healthChecker.getPeerRegistry().getRobotMechanic().areAllACKsReceived();
     }
 
     private void clearDeadPeersACKs() {
         List<String> deadPeers = new ArrayList<>();
-        for (String peerID : healthChecker.getPeerRegistry().getRobotMechanic().mutexACKReceived.keySet())
+        for (String peerID : healthChecker.getPeerRegistry().getRobotMechanic().getMutexACKReceived().keySet())
             if (healthChecker.getPeerRegistry().getConnectedPeers().get(peerID) == null)
                 deadPeers.add(peerID);
 
         for (String peer : deadPeers)
-            healthChecker.getPeerRegistry().getRobotMechanic().mutexACKReceived.remove(peer);
+            healthChecker.getPeerRegistry().getRobotMechanic().getMutexACKReceived().remove(peer);
     }
 }

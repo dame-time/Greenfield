@@ -4,30 +4,46 @@ import utils.data.AirPollutionMeasurement;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class SingleCrashedRobotHandler extends Thread {
     private String singleProcessName;
     private long lastMessageTimestamp;
+    private boolean isRunning;
 
     public SingleCrashedRobotHandler() {
         lastMessageTimestamp = 0;
         singleProcessName = "";
+        this.isRunning = true;
     }
 
     public synchronized void shutDownSingleProcessCrashHandler() {
+        this.isRunning = false;
         this.interrupt();
+    }
+
+    public void awake() {
+        synchronized (this) {
+            this.notifyAll();
+        }
     }
 
     @Override
     public void run() {
-        while (!Thread.currentThread().isInterrupted()) {
+        while (isRunning) {
             if (AdministrationServerRegister.getCleaningRobots().size() != 1) {
                 singleProcessName = "";
                 lastMessageTimestamp = 0;
-                waitNextIteration(15000);
+                synchronized (this) {
+                    try {
+                        this.wait();
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
                 continue;
             }
+
+            System.out.println("CHECKING IF A SINGLE ROBOT IS CRASHED....");
 
             singleProcessName = getLastRobotID();
             lastMessageTimestamp = getLastMessageTimestamp();
@@ -46,11 +62,13 @@ public class SingleCrashedRobotHandler extends Thread {
         }
     }
 
-    private static void waitNextIteration(long waitTime) {
-        try {
-            Thread.sleep(waitTime);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+    private void waitNextIteration(long waitTime) {
+        synchronized (this) {
+            try {
+                wait(waitTime);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

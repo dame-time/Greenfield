@@ -2,7 +2,7 @@ package greenfield.model.robot.grpc;
 
 import greenfield.model.adminServer.District;
 import greenfield.model.robot.CleaningRobot;
-import greenfield.model.robot.utils.PeerBalancingInfo;
+import greenfield.model.robot.utils.ACKReceiver;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import proto.RobotServiceGrpc;
@@ -53,10 +53,12 @@ public class PeerRegistry {
     public static class RobotMechanic {
         public boolean needsRepairing;
         public boolean isRepairing;
-        public Map<String, Boolean> mutexACKReceived;
         public long requestTimestamp;
         public List<Peer> waitingPeers;
         public int requestLogicalTimestamp;
+        public ACKReceiver ackReceiverThread;
+
+        private final Map<String, Boolean> mutexACKReceived;
 
         public RobotMechanic() {
             this.needsRepairing = false;
@@ -74,6 +76,38 @@ public class PeerRegistry {
             this.requestTimestamp = copy.requestTimestamp;
             this.waitingPeers = copy.waitingPeers;
             this.requestLogicalTimestamp = copy.requestLogicalTimestamp;
+        }
+
+        public Map<String, Boolean> getMutexACKReceived() {
+            synchronized (this) {
+                return mutexACKReceived;
+            }
+        }
+
+        public void putACKInReceivedACKs(String robotID, boolean ack) {
+            synchronized (this) {
+                mutexACKReceived.put(robotID, ack);
+                this.notifyAll();
+            }
+        }
+
+        public void waitForACKsReceived() throws InterruptedException {
+            synchronized (this) {
+                if (!mutexACKReceived.values().stream().allMatch(e -> e))
+                    this.wait();
+            }
+        }
+
+        public void awakeDueToPeerFailure() {
+            synchronized (this) {
+                this.notifyAll();
+            }
+        }
+
+        public boolean areAllACKsReceived() {
+            synchronized (this) {
+                return mutexACKReceived.values().stream().allMatch(e -> e);
+            }
         }
     }
 
@@ -267,6 +301,7 @@ public class PeerRegistry {
     public void addChangeDistrictsACK(String robotID) {
         synchronized (changeDistrictsACKReceived) {
             changeDistrictsACKReceived.put(robotID, true);
+            changeDistrictsACKReceived.notifyAll();
         }
     }
 
@@ -282,6 +317,25 @@ public class PeerRegistry {
     public void clearChangeDistrictsACK() {
         synchronized (changeDistrictsACKReceived) {
             changeDistrictsACKReceived.clear();
+        }
+    }
+
+    public boolean areAllACKsReceived() {
+        synchronized (changeDistrictsACKReceived) {
+            return getChangeDistrictsACKReceived()
+                    .values()
+                    .stream()
+                    .filter(e -> e)
+                    .toList()
+                    .size() >= getConnectedPeers()
+                                .values()
+                                .size() / 2;
+        }
+    }
+
+    public void waitUntilACKIsReceived() throws InterruptedException {
+        synchronized (changeDistrictsACKReceived) {
+            changeDistrictsACKReceived.wait();
         }
     }
 }

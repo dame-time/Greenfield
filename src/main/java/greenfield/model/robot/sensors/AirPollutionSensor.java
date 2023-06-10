@@ -47,7 +47,8 @@ public class AirPollutionSensor extends Thread {
         new Thread(simulator).start();
     }
 
-    public void stopSensor() {
+    public synchronized void stopSensor() {
+        this.notifyAll();
         this.stopCondition = true;
     }
 
@@ -75,21 +76,27 @@ public class AirPollutionSensor extends Thread {
         }
 
         startSensor();
-        try {
-            Thread.sleep(15000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        synchronized (this) {
+            try {
+                this.wait(15000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
+
         while (!stopCondition) {
 
             List<Measurement> measurements = airPollutionBuffer.readAllAndClean();
 
             processMeasurements(measurements);
             sendMeasurements();
-            try {
-                Thread.sleep(15000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+
+            synchronized (this) {
+                try {
+                    wait(15000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
